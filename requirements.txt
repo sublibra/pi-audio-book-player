@@ -1,0 +1,6 @@
+# For Raspberry Pi
+RPi.GPIO>=0.7.1; platform_machine == "armv7l" or platform_machine == "aarch64"
+
+# Common dependencies
+# No additional dependencies needed - using subprocess for mpg123
+

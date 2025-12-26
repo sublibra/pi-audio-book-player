@@ -1,0 +1,27 @@
+{
+  "audiobooks": [
+    {"name": "Book 1", "path": ""},
+    {"name": "Book 2", "path": ""},
+    {"name": "Book 3", "path": ""},
+    {"name": "Book 4", "path": ""},
+    {"name": "Book 5", "path": ""},
+    {"name": "Book 6", "path": ""},
+    {"name": "Book 7", "path": ""}
+  ],
+  "gpio_pins": {
+    "buttons": {
+      "play_pause": 17,
+      "sleep_timer": 27,
+      "next_book": 22,
+      "prev_book": 23,
+      "forward": 24,
+      "backward": 25
+    },
+    "leds": [5, 6, 13, 19, 26, 16, 20]
+  },
+  "state_file": "audiobook_state.json",
+  "save_interval_seconds": 5,
+  "sleep_timer_minutes": 15,
+  "seek_seconds": 60,
+  "book_announcement_path": ""
+}
