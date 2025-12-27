@@ -30,37 +30,47 @@ class GPIOInterface(ABC):
 
 
 class RaspberryPiGPIO(GPIOInterface):
-    """Real Raspberry Pi GPIO implementation."""
+    """Real Raspberry Pi GPIO implementation using gpiozero."""
     
     def __init__(self):
-        """Initialize RPi.GPIO."""
+        """Initialize gpiozero."""
         try:
-            import RPi.GPIO as GPIO
-            self.GPIO = GPIO
-            self.GPIO.setmode(GPIO.BCM)
-            self.GPIO.setwarnings(False)
-            print("Initialized Raspberry Pi GPIO")
+            from gpiozero import Button, LED
+            self.Button = Button
+            self.LED = LED
+            self.buttons = {}
+            self.leds = {}
+            print("Initialized Raspberry Pi GPIO (gpiozero)")
         except ImportError:
-            raise RuntimeError("RPi.GPIO not available. Use --mock flag for testing.")
+            raise RuntimeError("gpiozero not available. Use --mock flag for testing.")
     
     def setup_button(self, pin: int, callback: Callable) -> None:
         """Setup a button with pull-up resistor and callback."""
-        self.GPIO.setup(pin, self.GPIO.IN, pull_up_down=self.GPIO.PUD_UP)
-        # Detect falling edge (button press with pull-up)
-        self.GPIO.add_event_detect(pin, self.GPIO.FALLING, callback=lambda channel: callback(), bouncetime=300)
+        # gpiozero Button uses pull_up=True by default, detects when_pressed
+        button = self.Button(pin, pull_up=True, bounce_time=0.3)
+        button.when_pressed = callback
+        self.buttons[pin] = button
     
     def setup_led(self, pin: int) -> None:
         """Setup an LED pin."""
-        self.GPIO.setup(pin, self.GPIO.OUT)
-        self.GPIO.output(pin, self.GPIO.LOW)
+        led = self.LED(pin)
+        led.off()
+        self.leds[pin] = led
     
     def set_led(self, pin: int, state: bool) -> None:
         """Set LED state (on/off)."""
-        self.GPIO.output(pin, self.GPIO.HIGH if state else self.GPIO.LOW)
+        if pin in self.leds:
+            if state:
+                self.leds[pin].on()
+            else:
+                self.leds[pin].off()
     
     def cleanup(self) -> None:
         """Cleanup GPIO resources."""
-        self.GPIO.cleanup()
+        for button in self.buttons.values():
+            button.close()
+        for led in self.leds.values():
+            led.close()
         print("GPIO cleanup complete")
 
 
