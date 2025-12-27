@@ -7,7 +7,7 @@
 **Size**: Small (~350 lines of Python code across 4 modules)  
 **Language**: Python 3.13+  
 **Target Platform**: Raspberry Pi (with mock mode for testing on any Linux system)  
-**External Dependencies**: madplay (audio player), RPi.GPIO or lgpio (GPIO control)
+**External Dependencies**: madplay (audio player), gpiozero (GPIO control; prefers lgpio or RPi.GPIO backend on Pi)
 
 ## Project Architecture
 
@@ -44,9 +44,10 @@ sudo apt-get install madplay
 
 ### Python Dependencies
 
-**IMPORTANT**: This project has conditional dependencies in requirements.txt:
-- `gpiozero`, `lgpio`, and `RPi.GPIO` are only needed on Raspberry Pi (armv7l/aarch64)
-- On x86_64 Linux systems (for mock mode testing), these GPIO libraries are NOT required and will fail to install
+**IMPORTANT**: GPIO stack is handled by gpiozero:
+- `gpiozero` is required everywhere (works in mock mode without hardware)
+- On Raspberry Pi (armv7l/aarch64) gpiozero will prefer `lgpio` or `RPi.GPIO` backends (both are conditional in requirements.txt)
+- On x86_64 Linux systems (mock mode), backend libs aren't needed; ignore install errors for them
 
 **Install Python dependencies using ONE of these methods:**
 
@@ -123,7 +124,7 @@ Any changes should be manually validated by:
 
 ### GPIO Abstraction
 - `GPIOInterface` abstract class enables testing without hardware
-- `RaspberryPiGPIO` uses RPi.GPIO library with BCM pin numbering
+- `RaspberryPiGPIO` uses gpiozero `Button`/`LED` (pull-up buttons, bounce_time=0.3)
 - `MockGPIO` uses termios for keyboard input on Linux systems
 
 ### Audio Playback
@@ -136,7 +137,7 @@ Any changes should be manually validated by:
 
 ### Known Issues & Workarounds
 
-1. **GPIO Warnings Disabled**: Line 41 of gpio_controller.py calls `GPIO.setwarnings(False)` to suppress GPIO channel already in use warnings on Raspberry Pi.
+1. **gpiozero backend choice**: On Raspberry Pi, gpiozero will pick an available backend (`lgpio` or `RPi.GPIO`). Ensure at least one backend library installs; otherwise hardware mode will fail to start.
 
 2. **Hardcoded Sleep**: main.py line 191 uses `time.sleep(1)` in the main loop - this is intentional for low CPU usage.
 
