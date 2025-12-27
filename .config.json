@@ -23,5 +23,6 @@
   "save_interval_seconds": 5,
   "sleep_timer_minutes": 15,
   "seek_seconds": 60,
-  "book_announcement_path": ""
+  "book_announcement_path": "",
+  "notification_sound_path": "/usr/share/sounds/freedesktop/stereo/bell.oga"
 }

@@ -1,6 +1,6 @@
 # Raspberry Pi Audiobook Player
 
-A GPIO-controlled audiobook player for Raspberry Pi using mpg123.
+A GPIO-controlled audiobook player for Raspberry Pi using madplay.
 
 ## Features
 
@@ -40,14 +40,14 @@ Rename the .config.json to config.json and update it with your audiobook paths.
 
 ```bash
 sudo apt-get update
-sudo apt-get install mpg123 python3-rpi.gpio
+sudo apt-get install madplay python3-rpi.gpio
 pip3 install -r requirements.txt
 ```
 
 ### On Linux (for testing)
 
 ```bash
-sudo apt-get install mpg123
+sudo apt-get install madplay
 ```
 
 ## Usage

@@ -31,7 +31,10 @@ class AudiobookPlayer:
         
         # Initialize components
         self.state_manager = StateManager(config['state_file'])
-        self.audio_player = AudioPlayer(seek_seconds=config['seek_seconds'])
+        self.audio_player = AudioPlayer(
+            seek_seconds=config['seek_seconds'],
+            notification_sound_path=config.get('notification_sound_path')
+        )
         self.gpio_controller = GPIOController(config['gpio_pins'], mock_mode=mock_mode)
         
         self.audiobooks: List[Dict[str, str]] = config['audiobooks']
@@ -82,6 +85,10 @@ class AudiobookPlayer:
         """Handle play/pause button press."""
         print("\n[Button] Play/Pause")
         self.audio_player.toggle_play_pause()
+        # Save state after play/pause
+        current_position = self.audio_player.get_position()
+        self.state_manager.set_position(current_position)
+        self.state_manager.save_state()
     
     def _on_sleep_timer(self) -> None:
         """Handle sleep timer button press."""
@@ -94,6 +101,7 @@ class AudiobookPlayer:
         current_book = self.state_manager.get_book()
         next_book = (current_book + 1) % len(self.audiobooks)
         self._switch_book(next_book)
+        # State is saved in _switch_book
     
     def _on_prev_book(self) -> None:
         """Handle previous book button press."""
@@ -101,16 +109,25 @@ class AudiobookPlayer:
         current_book = self.state_manager.get_book()
         prev_book = (current_book - 1) % len(self.audiobooks)
         self._switch_book(prev_book)
+        # State is saved in _switch_book
     
     def _on_forward(self) -> None:
         """Handle forward button press."""
         print("\n[Button] Forward")
         self.audio_player.seek_forward()
+        # Save state after seeking
+        current_position = self.audio_player.get_position()
+        self.state_manager.set_position(current_position)
+        self.state_manager.save_state()
     
     def _on_backward(self) -> None:
         """Handle backward button press."""
         print("\n[Button] Backward")
         self.audio_player.seek_backward()
+        # Save state after seeking
+        current_position = self.audio_player.get_position()
+        self.state_manager.set_position(current_position)
+        self.state_manager.save_state()
     
     def _switch_book(self, book_index: int) -> None:
         """Switch to a different audiobook.

@@ -1,6 +1,4 @@
-# For Raspberry Pi
+# GPIO stack (gpiozero prefers lgpio or RPi.GPIO underneath)
+gpiozero>=1.6.2
+lgpio>=0.2.2; platform_machine == "armv7l" or platform_machine == "aarch64"
 RPi.GPIO>=0.7.1; platform_machine == "armv7l" or platform_machine == "aarch64"
-
-# Common dependencies
-# No additional dependencies needed - using subprocess for mpg123
-
